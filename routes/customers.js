@@ -2,13 +2,15 @@
  * Created by abhishek on 23/07/17.
  */
 'use strict';
- 
+
 const Router = require('express').Router(),
     U = require('../utils'),
     R = require('ramda'),
     DB = require('../models');
 
 const model = DB.customer
+
+Router.use(U.ensureLogin)
 
 Router.get('/', (req, res, next) => {
     if (U.isNotEmpty (req.query))
