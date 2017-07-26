@@ -16,21 +16,25 @@ const signJwt = (data, keyName) => {
 
 const normalize = R.pipe(JSON.stringify, JSON.parse)
 
+const defaultToString = R.defaultTo('')
+
 const ensureLogin = (req, res, next) => {
     const filePath = path.join(__dirname, 'keys/public.key')
     const publicKey = fs.readFileSync(filePath);
-    console.log(req.headers)
-    const token = req.headers['authorization'].split(' ')[1]
-    console.log(token)
-    jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, decoded) => {
-        if (err) {
-            console.error(err)
-            res.sendStatus(401)
-        } else {
-            req.user = decoded
-            next()
-        }
-    })
+    if ( isNotEmpty(req.headers['authorization']) ) {
+        const token = req.headers['authorization'].split(' ')[1]
+        jwt.verify(token, publicKey, { algorithms: ['RS256'] }, (err, decoded) => {
+            if (err) {
+                console.error(err)
+                res.sendStatus(401)
+            } else {
+                req.user = decoded
+                next()
+            }
+        })
+    } else {
+        res.sendStatus(401)
+    }
 }
 
 const neg = f => R.pipe(
