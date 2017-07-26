@@ -6,7 +6,6 @@
 const R = require('ramda'),
     jwt = require('jsonwebtoken'),
     path = require('path'),
-    expressJwt = require('express-jwt'),
     fs = require('fs-extra');
 
 const signJwt = (data, keyName) => {
