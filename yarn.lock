@@ -467,6 +467,24 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "4.1.11"
   resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.1.11.tgz#0e8bdfe4d1ddb8854d64e04ea7c00e2a026e5658"
 
+handlebars-pdf@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/handlebars-pdf/-/handlebars-pdf-1.0.1.tgz#5736ed97d891da0a6a6a48b9761c8bfa507196b4"
+  dependencies:
+    handlebars "4.0.5"
+    html-pdf "2.1.0"
+    lodash.defaults "4.2.0"
+
+handlebars@4.0.5:
+  version "4.0.5"
+  resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.5.tgz#92c6ed6bb164110c50d4d8d0fbddc70806c6f8e7"
+  dependencies:
+    async "^1.4.0"
+    optimist "^0.6.1"
+    source-map "^0.4.4"
+  optionalDependencies:
+    uglify-js "^2.6"
+
 handlebars@^4.0.10:
   version "4.0.10"
   resolved "https://registry.yarnpkg.com/handlebars/-/handlebars-4.0.10.tgz#3d30c718b09a3d96f23ea4cc1f403c4d3ba9ff4f"
@@ -512,7 +530,7 @@ hoek@2.x.x:
   version "2.16.3"
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-2.16.3.tgz#20bb7403d3cea398e91dc4710a8ff1b8274a25ed"
 
-html-pdf@^2.1.0:
+html-pdf@2.1.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/html-pdf/-/html-pdf-2.1.0.tgz#c34d518f7f802ffbc834bf80279cfce7da2cce4b"
   optionalDependencies:
@@ -696,6 +714,10 @@ klaw@^1.0.0:
 lazy-cache@^1.0.3:
   version "1.0.4"
   resolved "https://registry.yarnpkg.com/lazy-cache/-/lazy-cache-1.0.4.tgz#a1d78fc3a50474cb80845d3b3b6e1da49a446e8e"
+
+lodash.defaults@4.2.0:
+  version "4.2.0"
+  resolved "https://registry.yarnpkg.com/lodash.defaults/-/lodash.defaults-4.2.0.tgz#d09178716ffea4dde9e5fb7b37f6f0802274580c"
 
 lodash.once@^4.0.0:
   version "4.1.1"

@@ -10,7 +10,7 @@ const Router = require('express').Router(),
     Handlebars = require('handlebars'),
     path = require('path'),
     config = require('../config.json'),
-    pdf = require('html-pdf'),
+    pdf = require('handlebars-pdf'),
     fs = require('fs-extra'),
     DB = require('../models');
 
@@ -52,13 +52,18 @@ Router.get('/:id/bill', (req, res) => {
             const template = Handlebars.compile(String (source))
             const html = template(payment)
             const fileName = `bill_${payment.vc_no}.pdf`
-            const generateBillPromise = new Promise((resolve, reject) => {
-                pdf.create(html).toFile(path.join(__dirname, `../bills/${fileName}`), function(err, res) {
-                    if (err)
-                        return reject(err)
-                    resolve(res.filename)
-                })
-            })
+            const document = {
+                template: source.toString('utf-8'),
+                context: payment,
+                path: path.join(__dirname, `../bills/${fileName}`),
+                options : {
+                    "format"     : "A4",
+                    "orientation": "portrait",
+                    "border"     : "0",
+                    "zoomFactor" : "0.4"
+                }
+            }
+            const generateBillPromise = pdf.create(document)
 
             const createBillPromise = DB.bill.create({
                 paymentId: payment.id,
@@ -68,14 +73,13 @@ Router.get('/:id/bill', (req, res) => {
             return Promise.all([generateBillPromise, createBillPromise])
         })
         .then( ([filename, bill]) => {
-            console.log(filename)
             res.json(bill)
         })
         .catch(err => {
         console.error(err)
         res.sendStatus(500)
         })
-    
+
 })
 
 Router.post('/', (req, res) => {

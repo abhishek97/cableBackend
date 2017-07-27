@@ -18,6 +18,7 @@ const routers = fs
         }
     })
 
+app.use(express.static('.well_known'))
 app.use(cors(), morgan('tiny'))
 app.use(bodyParser.urlencoded({limit: '100mb', extended: true}));
 app.use(bodyParser.json({limit: '100mb' , type : 'application/json'}));
