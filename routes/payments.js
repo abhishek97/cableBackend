@@ -64,7 +64,6 @@ Router.get('/:id/bill', (req, res) => {
                 }
             }
             const generateBillPromise = pdf.create(document)
-
             const createBillPromise = DB.bill.create({
                 paymentId: payment.id,
                 url: `${config.baseURL}/static/${fileName}`
