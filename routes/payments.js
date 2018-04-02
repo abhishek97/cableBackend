@@ -16,12 +16,17 @@ const Router = require('express').Router(),
 
 const model = DB.payment
 
+Router.use(U.ensureLogin)
+
 Router.get('/', (req, res, next) => {
     if (U.isNotEmpty (req.query))
         return next ()
 
     model.findAll().then(payments => {
         res.json(payments)
+    }).catch(err => {
+        console.error(err)
+        res.status(500).json(err)
     })
 })
 
@@ -37,11 +42,15 @@ Router.get('/', (req, res) => {
         }
     }).then(customers => {
         res.json(customers)
+    }).catch(err => {
+        console.error(err)
+        res.status(500).json(err)
     })
 })
 
 Router.get('/:id/bill', (req, res) => {
-
+    // Drop this request for now
+    res.send(404)
     const sourcePromise = fs.readFile(path.join(__dirname,'../templates/invoice.hbs'))
     const paymentPromise = model.findById(req.params.id,{
         include: DB.customer
@@ -75,17 +84,18 @@ Router.get('/:id/bill', (req, res) => {
             res.json(bill)
         })
         .catch(err => {
-        console.error(err)
-        res.sendStatus(500)
+            console.error(err)
+            res.status(500).json(err)
         })
 
 })
 
 Router.post('/', (req, res) => {
+    req.body.createdById = req.user.id
     model.create(req.body).then(payment =>{
         res.json(payment)
     }).catch(err => {
-        res.sendStatus(500)
+        res.status(500).json(err)
     })
 
 })

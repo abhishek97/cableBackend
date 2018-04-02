@@ -20,6 +20,8 @@ Router.get('/', (req, res, next) => {
         limit: 30
     }).then(customers => {
         res.json(customers)
+    }).catch(err => {
+        res.status(500).json(err)
     })
 })
 
@@ -35,6 +37,8 @@ Router.get('/', (req, res) => {
         limit: 30
     }).then(customers => {
         res.json(customers)
+    }).catch(err => {
+        res.status(500).json(err)
     })
 })
 
@@ -48,7 +52,20 @@ Router.get('/:id', (req, res) => {
             res.json(customer)
     }).catch(err=> {
         console.error(err)
-        res.sendStatus(500)
+        res.status(500).json(err)
+    })
+})
+
+Router.post('/', (req, res) => {
+    const customer = req.body
+    customer.createdById = req.user.id
+    model.create(customer, {
+        returning: true
+    }).then(dbCustomer => {
+        res.json(dbCustomer)
+    }).catch(err => {
+        console.error(err)
+        res.status(500).json(err)
     })
 })
 

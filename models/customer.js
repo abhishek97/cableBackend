@@ -16,18 +16,35 @@ module.exports = {
             name           : Sequelize.STRING,
             address        : Sequelize.STRING,
             mobile         : Sequelize.BIGINT,
-            vc_no          : Sequelize.STRING,
-            monthly_payment: Sequelize.INTEGER,
-            arrears        : Sequelize.INTEGER,
+            vc_no          : {
+                type: Sequelize.STRING,
+                unique: true,
+                allowNull: false
+            },
+            monthly_payment: {
+                type: Sequelize.INTEGER,
+                defaultValue: 300,
+            },
+            arrears        : {
+                type: Sequelize.INTEGER,
+                defaultValue: 0
+            },
             cable_network  : Sequelize.STRING,
-            status         : Sequelize.STRING,
+            status         : {
+                type: Sequelize.STRING,
+                defaultValue: 'Active'
+            },
             cable_guy      : Sequelize.STRING,
-            total_payment  : Sequelize.INTEGER
+            total_payment  : {
+                type: Sequelize.INTEGER,
+                defaultValue: 0
+            }
         })
         return Customer
     },
 
-    associate ({customer, payment}) {
+    associate ({customer, payment, user}) {
         customer.hasMany(payment)
+        customer.belongsTo(user, {as: 'createdBy'})
     }
 }

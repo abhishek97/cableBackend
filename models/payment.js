@@ -25,8 +25,9 @@ module.exports = {
         return Payment
     },
 
-    associate ({customer, payment}) {
+    associate ({customer, payment, user}) {
         payment.belongsTo(customer)
+        payment.belongsTo(user, {as: 'createdBy'})
     }
 
 }

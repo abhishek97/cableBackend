@@ -16,8 +16,10 @@ Router.post('/', (req, res) => {
             password: sha256.update(safe(password)).digest('hex')
         }
     }).then(user => {
-        if ( U.isNotEmpty(user) )
+        if ( U.isNotEmpty(user) ) {
+            delete user.password
             res.json(U.signJwt(U.normalize(user), 'private'))
+        }
         else
             res.sendStatus(401)
     }).catch(err => {
