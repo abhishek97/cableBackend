@@ -8,43 +8,42 @@ const Sequelize = require('sequelize');
 module.exports = {
     define (db) {
         const Customer = db.define('customer', {
-            id             : {
+            id: {
                 type         : Sequelize.BIGINT,
                 primaryKey   : true,
                 autoIncrement: true
             },
-            name           : Sequelize.STRING,
-            address        : Sequelize.STRING,
-            mobile         : Sequelize.BIGINT,
-            vc_no          : {
+            name: {
                 type: Sequelize.STRING,
-                unique: true,
                 allowNull: false
             },
-            monthly_payment: {
-                type: Sequelize.INTEGER,
-                defaultValue: 300,
-            },
-            arrears        : {
-                type: Sequelize.INTEGER,
-                defaultValue: 0
-            },
-            cable_network  : Sequelize.STRING,
-            status         : {
+            address: {
                 type: Sequelize.STRING,
-                defaultValue: 'Active'
+                allowNull: false
             },
-            cable_guy      : Sequelize.STRING,
-            total_payment  : {
-                type: Sequelize.INTEGER,
-                defaultValue: 0
+            mobile: {
+                type: Sequelize.INTEGER(10),
+                allowNull: false
+            },
+            vc_no_trail: {
+                type: Sequelize.STRING,
+                allowNull: true
+            },
+            status: {
+                type: Sequelize.ENUM('0', '1', '2'),
+                defaultValue: '0',
+            },
+            expiry_date: {
+                type: Sequelize.DATE,
+                allowNull: false
             }
         })
         return Customer
     },
 
-    associate ({customer, payment, user}) {
+    associate ({customer, stb, payment, user}) {
         customer.hasMany(payment)
+        customer.hasOne(stb)
         customer.belongsTo(user, {as: 'createdBy'})
     }
 }

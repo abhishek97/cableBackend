@@ -9,24 +9,30 @@ const Sequelize = require('sequelize'),
 module.exports = {
     define (db) {
         const Payment = db.define('payment', {
-            id          : {
+            id: {
                 type         : Sequelize.BIGINT,
                 primaryKey   : true,
                 autoIncrement: true
             },
-            vc_no       : Sequelize.STRING,
             payment_date: {
                 type        : Sequelize.DATE,
                 defaultValue: DataTypes.NOW,
 
             },
-            amount      : Sequelize.INTEGER
+            amount: {
+                type: Sequelize.INTEGER,
+                allowNull: false
+            },
+            remarks: {
+                type: Sequelize.STRING
+            }
         })
         return Payment
     },
 
-    associate ({customer, payment, user}) {
+    associate ({customer, payment, user, stb}) {
         payment.belongsTo(customer)
+        payment.belongsTo(stb)
         payment.belongsTo(user, {as: 'createdBy'})
     }
 

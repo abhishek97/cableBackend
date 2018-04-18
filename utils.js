@@ -51,5 +51,9 @@ module.exports = {
     isNotEmpty,
     signJwt,
     ensureLogin,
-    normalize
+    normalize,
+    STBSTATUS: {
+        NEW: 0
+    }
+    
 }

@@ -3,8 +3,12 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "node index.js"
+  },
   "dependencies": {
     "body-parser": "^1.17.2",
+    "cb-authoritah": "^1.2.0",
     "cors": "^2.8.4",
     "express": "^4.15.3",
     "express-jwt": "^5.3.0",
