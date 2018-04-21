@@ -28,10 +28,11 @@ module.exports = {
         return Stb
     },
 
-    associate ({customer, stb, agent, cable_network, user}) {
+    associate ({customer, stb, agent, cable_network, user, payment}) {
         stb.belongsTo(customer)
         stb.belongsTo(agent)
         stb.belongsTo(cable_network)
+        stb.hasMany(payment)
         stb.belongsTo(user, {as: 'createdBy'})
     }
 

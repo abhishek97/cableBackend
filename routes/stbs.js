@@ -20,6 +20,7 @@ Router.post('/', (req, res) => {
         stb = {
             vc_no: req.body.vc_no,
             status: U.STBSTATUS.NEW,
+            remarks: req.body.remarks,
             agentId: req.body.agent.id,
             cableNetworkId: req.body.cable_network.id,
             createdById: req.user.id

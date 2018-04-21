@@ -7,6 +7,7 @@ const Router = require('express').Router(),
     U = require('../utils'),
     R = require('ramda'),
     A = require('../auth'),
+    moment = require('moment'),
     DB = require('../models');
 
 const model = DB.customer
@@ -37,7 +38,12 @@ Router.get('/', (req, res, next) => {
     model.findAll({
         limit: 30,
         include: {
-            all: true
+            model: DB.stb,
+            include: [{
+                model: DB.agent,
+            }, {
+                model: DB.cable_network
+            }]
         }
     }).then(customers => {
         res.json(customers)
@@ -51,12 +57,17 @@ Router.get('/', (req, res) => {
     const {vc_no} = JSON.parse(filter)
     model.findAll({
         where: {
-            vc_no: {
+            vc_no_trail: {
                 $like: `%${vc_no}%`
             }
         },
         include: {
-            all: true
+            model: DB.stb,
+            include: [{
+                model: DB.agent,
+            }, {
+                model: DB.cable_network
+            }]
         },
         limit: 30
     }).then(customers => {
@@ -64,6 +75,64 @@ Router.get('/', (req, res) => {
     }).catch(err => {
         res.status(500).json(err)
     })
+})
+
+Router.get('/incompleteCaf', async (req, res) => {
+    let stbs = await DB.stb.findAll({
+        limit: 30,
+        include: [{
+            model: DB.payment
+        },{
+            model: DB.customer,
+            include: {
+                model: DB.stb,
+                include: [{
+                    model: DB.agent,
+                }, {
+                    model: DB.cable_network
+                }]
+            }
+        }, {
+            model: DB.agent,
+        }, {
+            model: DB.cable_network 
+        }, {
+            model: DB.user,
+            attributes: ['id', 'username'],
+            as: 'createdBy'
+        }]
+    })
+    stbs = stbs.map(stb => stb.get({plain: true})).filter(stb => !stb.payments.length)
+    res.json(stbs)
+})
+
+Router.get('/collectPayments', async (req, res) => {
+    let customers = await model.findAll({
+        where: {     
+            expiry_date: {
+                $lte: moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
+            }      
+        },
+        include: [{
+            model: DB.stb,
+            include: [{
+                model: DB.agent,
+            }, {
+                model: DB.cable_network
+            }],
+            where: {
+                customerId: {
+                    $not: null
+                }
+            }
+        }, {
+            model: DB.user,
+            attributes: ['id', 'username'],
+            as: 'createdBy'
+        }]
+    })
+    customers = customers.map(c => c.get({plain: true}))
+    res.json(customers)
 })
 
 Router.get('/:id', (req, res) => {
@@ -81,20 +150,41 @@ Router.get('/:id', (req, res) => {
 })
 
 Router.post('/', async (req, res) => {
-    const customer = req.body
-    customer.createdById = req.user.id
-    customer.stbId = customer.stb.id 
-    customer.vc_no = customer.stb.vc_no
+    try {
+        const customer = {
+            name: req.body.name,
+            address: req.body.address,
+            mobile: req.body.mobile,
+            vc_no_trail: req.body.stb.vc_no,
+            expiry_date: moment().format('YYYY-MM-DD HH:mm:ss'),
+            createdById : req.user.id,
+            //stbId : customer.stb.id,
+            //vc_no : customer.stb.vc_no
+        }
+        const stbId = req.body.stb.id
 
-    model.create(customer, {
-        returning: true
-    }).then(dbCustomer => {
+        const dbCustomer = await model.create(customer, {
+            returning: true
+        })
+
+        await DB.stb.update({
+            status: 1
+        },{
+            where: {
+                id: stbId,
+                status: 0
+            }
+        })
+        
+        await dbCustomer.setStb(stbId)
+    
         res.json(dbCustomer)
-    }).catch(err => {
-        console.error(err)
-        res.status(500).json(err)
-    })
+    } catch (e) {
+        console.error(e)
+        return res.status(500).json(e)
+    }
 })
+
 
 
 module.exports = Router

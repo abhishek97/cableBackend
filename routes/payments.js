@@ -90,13 +90,27 @@ Router.get('/:id/bill', (req, res) => {
 
 })
 
-Router.post('/', (req, res) => {
-    req.body.createdById = req.user.id
-    model.create(req.body).then(payment =>{
-        res.json(payment)
-    }).catch(err => {
-        res.status(500).json(err)
+Router.post('/', async (req, res) => {
+    const payment = {
+        amount: req.body.amount,
+        remarks: req.body.remarks,
+        customerId: req.body.customerId,
+        stbId: req.body.stbId,
+        createdById: req.user.id
+    }
+    const customerId = req.body.customerId
+    
+    const dbPayment = await model.create(payment)
+
+    await DB.customer.update({
+        expiry_date: DB.sequelize.literal('date_add(DATE(expiry_date), INTERVAL 30 day)')
+    },{
+        where: {
+            id: customerId
+        }
     })
+
+    res.json(dbPayment)
 
 })
 
