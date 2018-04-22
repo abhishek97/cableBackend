@@ -19,6 +19,11 @@ module.exports = {
                 defaultValue: DataTypes.NOW,
 
             },
+            months: {
+                type: Sequelize.INTEGER,
+                allowNull: false,
+                defaultValue: 1
+            },
             amount: {
                 type: Sequelize.INTEGER,
                 allowNull: false

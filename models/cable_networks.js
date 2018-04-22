@@ -19,7 +19,6 @@ module.exports = {
     },
 
     associate ({cable_network, stb}) {
-        stb.belongsTo(cable_network)
         cable_network.hasMany(stb)
     }
 

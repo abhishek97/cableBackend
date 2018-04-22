@@ -122,6 +122,7 @@ Router.post('/', async (req, res) => {
     const payment = {
         amount: req.body.amount,
         remarks: req.body.remarks,
+        months: req.body.months,
         customerId: req.body.customerId,
         stbId: req.body.stbId,
         createdById: req.user.id
@@ -131,7 +132,7 @@ Router.post('/', async (req, res) => {
     const dbPayment = await model.create(payment)
 
     await DB.customer.update({
-        expiry_date: DB.sequelize.literal('date_add(DATE(expiry_date), INTERVAL 30 day)')
+        expiry_date: DB.sequelize.literal(`date_add(DATE(expiry_date), INTERVAL ${dbPayment.months} month)`)
     },{
         where: {
             id: customerId

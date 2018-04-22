@@ -1,0 +1,2 @@
+ALTER TABLE payments 
+ Add COLUMN months INT DEFAULT 1;
