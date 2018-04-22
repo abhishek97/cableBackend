@@ -30,8 +30,8 @@ module.exports = {
 
     associate ({customer, stb, agent, cable_network, user, payment}) {
         stb.belongsTo(customer)
-        stb.belongsTo(agent)
-        stb.belongsTo(cable_network)
+        stb.belongsTo(agent,  { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
+        stb.belongsTo(cable_network,  { foreignKey: { allowNull: false }, onDelete: 'CASCADE' })
         stb.hasMany(payment)
         stb.belongsTo(user, {as: 'createdBy'})
     }

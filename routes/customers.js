@@ -108,10 +108,17 @@ Router.get('/incompleteCaf', async (req, res) => {
 
 Router.get('/collectPayments', async (req, res) => {
     let customers = await model.findAll({
-        where: {     
-            expiry_date: {
-                $lte: moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
-            }      
+        where: {    
+            $and: [{
+                expiry_date: {
+                    $lte: moment().add(2, 'days').format('YYYY-MM-DD HH:mm:ss')
+                }  
+            }, {
+                vc_no_trail: {
+                    $like: '%' + req.query.vc_no + '%'
+                }
+            }] 
+                
         },
         include: [{
             model: DB.stb,

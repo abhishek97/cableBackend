@@ -12,6 +12,7 @@ const Router = require('express').Router(),
     config = require('../config.json'),
     pdf = require('handlebars-pdf'),
     fs = require('fs-extra'),
+    moment = require('moment'),
     DB = require('../models');
 
 const model = DB.payment
@@ -48,6 +49,33 @@ Router.get('/', (req, res) => {
     })
 })
 
+Router.get('/daily', (req, res) => {
+    model.findAll({
+        where: {
+            payment_date: {
+                $gt: moment().startOf('day').format('YYYY-MM-DD HH:mm:ss')
+            }
+        },
+        include: [{
+            model: DB.stb,
+            where: {
+                vc_no: {
+                    $like: '%' + (req.query.vc_no || '') + '%'
+                }
+            },
+            required: true,
+            include: [DB.agent, DB.cable_network]
+        }, {
+            model: DB.customer
+        }, {
+            model: DB.user,
+            attributes: ['id', 'username'],
+            as: 'createdBy'
+        }]
+    }).then(result => {
+        res.json(result.map(_ => _.get({plain: true})))
+    })
+})
 Router.get('/:id/bill', (req, res) => {
     // Drop this request for now
     res.send(404)
