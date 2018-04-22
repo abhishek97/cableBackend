@@ -115,7 +115,7 @@ Router.get('/collectPayments', async (req, res) => {
                 }  
             }, {
                 vc_no_trail: {
-                    $like: '%' + req.query.vc_no || '' + '%'
+                    $like: '%' + (req.query.vc_no || '') + '%'
                 }
             }] 
                 
