@@ -7,11 +7,62 @@ const model = DB.stb;
 Router.use(U.ensureLogin)
 
 Router.get('/', (req, res) => {
-    console.log(req.query)
+    Object.keys(req.query.filter).forEach(key => {
+        if (req.query.filter[key] === '')
+            req.query.filter[key] = null
+    })
     model.findAll({
-        where: req.query.filter,
+        where: {
+            customerId: {
+                $not: null
+            },
+            ...req.query.filter
+        },
+        include: [{
+            model: DB.agent,
+        }, {
+            model: DB.cable_network
+        }, {
+            model: DB.user,
+            as: 'createdBy',
+            attributes: ['id', 'username']
+        }],
         limit: 10
     }).then(stb => res.json(stb))
+})
+
+Router.get('/:id', (req, res) => {
+    model.findById(req.params.id, {
+        where: {
+            customerId: {
+                $not: null
+            }
+        },
+        include: [{
+            model: DB.agent,
+        }, {
+            model: DB.cable_network
+        },{
+            model: DB.customer
+        }, {
+            model: DB.user,
+            as: 'createdBy',
+            attributes: ['id', 'username']
+        }],
+    }).then(result => res.json(result))
+})
+
+Router.get('/:id/return', async (req, res) => {
+    const stbId = req.params.id
+    const result = await model.update({
+        status: -1,
+        customerId: null
+    }, {
+        where: {
+            id: stbId
+        }
+    })
+    res.sendStatus(200)
 })
 
 Router.post('/', (req, res) => {

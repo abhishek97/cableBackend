@@ -142,6 +142,41 @@ Router.get('/collectPayments', async (req, res) => {
     res.json(customers)
 })
 
+Router.get('/:id/reassign', async (req, res) => {
+    const { stbId } = req.query 
+    // check if this stbId avaiable to be assigned
+    const newStb = await DB.stb.findById(stbId)
+    if (newStb.customerId) {
+        return res.json({
+            err: 'Stb selected is not available or already assigned to another customer'
+        })
+    }
+
+    // get customer for the this id
+    const customer = await model.findById(req.params.id, {
+        include: {
+            model: DB.stb
+        }
+    })
+
+    // return the old stb
+    const result = await DB.stb.update({
+        status: -1,
+        customerId: null
+    }, {
+        where: {
+            id: customer.stb.id
+        }
+    })
+
+    //assign new stb
+    newStb.set('status', 1)
+    customer.set('vc_no_trail', customer.vc_no_trail + ',' + newStb.vc_no)
+    const r = await Promise.all([customer.setStb(newStb), customer.save()])
+
+    res.sendStatus(200)
+
+})
 Router.get('/:id', (req, res) => {
     model.findById(req.params.id, {
         include : {
